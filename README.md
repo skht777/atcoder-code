@@ -4,6 +4,6 @@ AtCoderから任意のユーザの提出コードをダウンロードするや�
 # 概要
 準備中
 
-# 必須環境
-[JSON-java](https://github.com/stleary/JSON-java)
-[Apache HttpComponents](https://hc.apache.org)
+## 必須環境
+* [JSON-java](https://github.com/stleary/JSON-java)
+* [Apache HttpComponents](https://hc.apache.org)
