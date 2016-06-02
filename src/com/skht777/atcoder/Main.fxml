@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import java.lang.*?>
+<?import javafx.scene.Scene?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="620.0" prefWidth="436.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <fx:include source="Box.fxml" />
-   </children>
-</AnchorPane>
+
+<Scene xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+	<fx:include source="Box.fxml" />
+</Scene>

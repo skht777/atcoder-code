@@ -15,21 +15,16 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 /**
  * @author skht777
  *
  */
 public class HttpClientAdapter implements Closeable {
-
-	public static ResponseHandler<URL> REDIRECT;
-	
-	static {
-		REDIRECT = 	res -> res.containsHeader("Location") ? new URL(res.getFirstHeader("Location").getValue()) : null;
-	}
 	
 	private CloseableHttpClient client;
 	
@@ -44,16 +39,16 @@ public class HttpClientAdapter implements Closeable {
 			return client.execute(request, res);
 		}
 		
+		public String execute() throws IOException {
+			return handle(res->EntityUtils.toString(res.getEntity(), "UTF-8"));
+		}
+		
 		public <T> T execute(Function<String, T> parser) throws IOException {
-			return parser.apply(handle(new BasicResponseHandler()));
+			return parser.apply(execute());
 		}
 		
-		public void execute(Consumer<String> parser) throws IOException {
-			parser.accept(handle(new BasicResponseHandler()));
-		}
-		
-		public void execute() throws IOException {
-			handle(new BasicResponseHandler());
+		public void consume(Consumer<String> parser) throws IOException {
+			parser.accept(execute());
 		}
 		
 	}
@@ -65,8 +60,20 @@ public class HttpClientAdapter implements Closeable {
 		this.client = client;
 	}
 	
+	public HttpClientAdapter() {
+		client = HttpClients.createDefault();
+	}
+	
+	public RequestAdapter request(String url) throws IOException {
+		return request(new URL(url));
+	}
+	
 	public RequestAdapter request(URL url) throws IOException {
 		return new RequestAdapter(new HttpGet(url.toExternalForm()));
+	}
+	
+	public RequestAdapter request(String url, List<BasicNameValuePair> param) throws IOException {
+		return request(new URL(url), param);
 	}
 	
 	public RequestAdapter request(URL url, List<BasicNameValuePair> param) throws IOException {

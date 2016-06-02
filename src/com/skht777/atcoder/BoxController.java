@@ -3,17 +3,15 @@
  */
 package com.skht777.atcoder;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -24,7 +22,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import javafx.util.Pair;
+import javafx.util.StringConverter;
+import javafx.scene.layout.BorderPane;
 
 /**
  * @author skht777
@@ -32,94 +32,89 @@ import javafx.stage.Stage;
  */
 public class BoxController implements Initializable {
 
+	@FXML private BorderPane root;
 	@FXML private TextField userField;
-	@FXML private ComboBox<String> contest;
-	@FXML private ComboBox<String> problem;
-	@FXML private ComboBox<String> submission;
-	@FXML private Button problemButton;
-	@FXML private Button codeButton;
+	@FXML private ComboBox<Pair<String, String>> contest;
+	@FXML private ComboBox<Pair<String, List<Submission>>> problem;
+	@FXML private ComboBox<Submission> submission;
 	@FXML private TextArea postedCode;
 	@FXML private Label languageLabel;
+	@FXML private Button problemButton;
+	@FXML private Button codeButton;
 	@FXML private Button saveButton;
-	
+
 	private APIConnect api;
-	private List<Submission> selected;
 	private String selectedContest;
-	private Stage stage;
-	
-	public void setStage(Stage stage) {
-		this.stage = stage;
+
+	private <T> StringConverter<T> getConverter(Function<T, String> converter) {
+		return new StringConverter<T>() {
+			@Override
+			public String toString(T object) {
+				return converter.apply(object);
+			}
+
+			@Override
+			public T fromString(String string) {return null;}
+		};
 	}
-	
-	private <T> T getByCollection(Collection<T> c, int index) {
-		return c.stream().collect(Collectors.toList()).get(index);
+
+	private Alert getAlert(Exception e, String message) {
+		e.printStackTrace();
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.getDialogPane().setHeaderText("通信エラー");
+		alert.getDialogPane().setContentText(message);
+		return alert;
 	}
-	
-	private ObservableList<String> toObservableList(Collection<String> c) {
-		ObservableList<String> obl = FXCollections.observableArrayList();
-		obl.addAll(c);
-		return obl;
-	}
-	
+
 	@FXML
 	private void setProblem() {
 		try {
-			selectedContest = getByCollection(api.getContests().keySet(), contest.getSelectionModel().getSelectedIndex());
-			api.getInfo(userField.getText(), selectedContest);
-			problem.setItems(toObservableList(api.getProblems().values()));
-		}catch(IOException e) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.getDialogPane().setHeaderText("通信エラー");
-			alert.getDialogPane().setContentText("投稿情報の取得に失敗しました。");
-			alert.show();
+			selectedContest = contest.getSelectionModel().getSelectedItem().getValue();
+			problem.setItems(FXCollections.observableArrayList(api.getInfo(userField.getText(), selectedContest)));
+		}catch(Exception e) {
+			getAlert(e, "投稿情報の取得に失敗しました。").show();
 			return;
 		}
 	}
-	
+
 	@FXML
 	private void setSubmission() {
-		selected = getByCollection(api.getSubmissions().values(), problem.getSelectionModel().getSelectedIndex());
-		submission.setItems(toObservableList(selected.stream().map(s->s.toString()).collect(Collectors.toList())));
+		submission.setItems(FXCollections.observableArrayList(problem.getSelectionModel().getSelectedItem().getValue()));
 	}
-	
+
 	@FXML
 	private void setCode() {
-		Submission s = selected.get(submission.getSelectionModel().getSelectedIndex());
-		languageLabel.setText(s.getLanguage());
+		if (submission.getSelectionModel().isEmpty()) return;
+		languageLabel.setText(submission.getSelectionModel().getSelectedItem().getLanguage());
 		try {
-			postedCode.setText(api.getCode(s.getId(), selectedContest));
-		}catch(IOException e) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.getDialogPane().setHeaderText("通信エラー");
-			alert.getDialogPane().setContentText("提出コードの取得に失敗しました。");
-			alert.show();
+			postedCode.setText(api.getCode(submission.getSelectionModel().getSelectedItem().getId(), selectedContest));
+		}catch(Exception e) {
+			getAlert(e, "提出コードの取得に失敗しました。").show();
 			return;
 		}
 	}
-	
+
 	@FXML
 	private void saveCode() {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("保存先を指定");
-		//fc.setSelectedExtensionFilter(Extention.toExtensionFilter(languageLabel.getText()));
-		System.out.println();
 		fc.getExtensionFilters().add(Extention.toExtensionFilter(languageLabel.getText()));
-		File f = fc.showSaveDialog(stage);
-		if (f != null) try (FileWriter fw = new FileWriter(f)) {
-			fw.write(postedCode.getText());
-		}catch(IOException e) {}
+		Optional.ofNullable(fc.showSaveDialog(root.getScene().getWindow())).ifPresent(f->{
+			try {
+				Files.write(f.toPath(), postedCode.getText().getBytes());
+			}catch(IOException e) {}}
+		);
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
 			api = new APIConnect();
-			contest.setItems(toObservableList(api.getContests().values()));
-		}catch(IOException e) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.getDialogPane().setHeaderText("通信エラー");
-			alert.getDialogPane().setContentText("コンテスト情報の取得に失敗しました。");
-			alert.show();
+			contest.setItems(FXCollections.observableArrayList(api.getContests()));
+			contest.setConverter(getConverter(Pair::getKey));
+			problem.setConverter(getConverter(Pair::getKey));
+		}catch(Exception e) {
+			getAlert(e, "コンテスト情報の取得に失敗しました。").show();
 			return;
 		}
 	}
