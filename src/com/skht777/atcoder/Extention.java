@@ -61,7 +61,7 @@ public enum Extention {
 	private ExtensionFilter filter;
 	
 	private Extention(String name, String... extention) {
-		filter = new ExtensionFilter("name", extention);
+		filter = new ExtensionFilter(name, extention);
 	}
 	
 	public static List<ExtensionFilter> getExtensionList() {
@@ -69,7 +69,7 @@ public enum Extention {
 	}
 	
 	public static ExtensionFilter toExtensionFilter(String name) {
-		return Arrays.stream(Extention.values()).filter(ex->ex.filter.getDescription().equalsIgnoreCase(name.replaceFirst("\\d{0,2} \\(.+\\)", "")))
-				.findFirst().orElse(Extention.TEXT).filter;
+		return getExtensionList().stream().filter(ex->ex.getDescription().equalsIgnoreCase(name.replaceFirst("\\d{0,2} \\(.+\\)", "")))
+				.findFirst().orElse(Extention.TEXT.filter);
 	}
 }

@@ -26,31 +26,27 @@ public class APIConnect {
 	private HttpClientAdapter adapter;
 
 	/**
-	 * @throws IOException
 	 * 
 	 */
-	public APIConnect() throws IOException {
+	public APIConnect() {
 		adapter = new HttpClientAdapter();
 	}
 
-	private String getURL(String api, String id, String contest) throws IOException {
+	private String getURL(String api, String id, String contest) {
 		return String.format("http://skht777.webcrow.jp/atcoder-api/submissions/%s.php?id=%s&contest=%s", api, id, contest);
-	}
-	
-	private Stream<JSONObject> toList(JSONObject target) {
-		return target.keySet().stream().map(s->target.getJSONObject(s));
 	}
 	
 	public List<Pair<String, String>> getContests() throws IOException {
 		JSONArray obj = adapter.request("http://kenkoooo.com/atcoder/json/contests.json").execute(JSONArray::new);
-		return IntStream.range(0, obj.length()).mapToObj(i->obj.getJSONObject(i)).map(o->new Pair<>(o.getString("name"), o.getString("id"))).collect(Collectors.toList());
+		return IntStream.range(0, obj.length()).mapToObj(i->obj.getJSONObject(i))
+				.map(o->new Pair<>(o.getString("name"), o.getString("id"))).collect(Collectors.toList());
 	}
 
 	public List<Pair<String, List<Submission>>> getInfo(String userId, String contest) throws IOException {
 		JSONObject res = adapter.request(getURL("list", userId, contest)).execute(JSONObject::new).getJSONObject(contest);
-		Map<String, List<Submission>> submission = toList(res.getJSONObject("submissions")).map(Submission::new)
-				.collect(Collectors.groupingBy(Submission::getNumber));
-		return toList(res.getJSONObject("problems")).map(o->new Pair<>(o.getString("number"), o.getString("title")))
+		Map<String, List<Submission>> submission = Stream.of(res.getJSONObject("submissions"))
+				.flatMap(o->o.keySet().stream().map(k->o.getJSONObject(k)).map(Submission::new)).collect(Collectors.groupingBy(Submission::getNumber));
+		return Stream.of(res.getJSONObject("problems")).flatMap(o->o.keySet().stream().map(k->o.getJSONObject(k))).map(o->new Pair<>(o.getString("number"), o.getString("title")))
 				.map(p->new Pair<>(p.getKey() + " " + p.getValue(), submission.getOrDefault(p.getKey(), new ArrayList<>()))).collect(Collectors.toList());
 	}
 

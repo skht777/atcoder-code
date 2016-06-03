@@ -98,7 +98,9 @@ public class BoxController implements Initializable {
 	private void saveCode() {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("保存先を指定");
-		fc.getExtensionFilters().add(Extention.toExtensionFilter(languageLabel.getText()));
+		fc.setInitialFileName(selectedContest);
+		fc.getExtensionFilters().addAll(Extention.getExtensionList());
+		fc.setSelectedExtensionFilter(Extention.toExtensionFilter(languageLabel.getText()));
 		Optional.ofNullable(fc.showSaveDialog(root.getScene().getWindow())).ifPresent(f->{
 			try {
 				Files.write(f.toPath(), postedCode.getText().getBytes());
@@ -108,11 +110,11 @@ public class BoxController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		api = new APIConnect();
+		contest.setConverter(getConverter(Pair::getKey));
+		problem.setConverter(getConverter(Pair::getKey));
 		try {
-			api = new APIConnect();
 			contest.setItems(FXCollections.observableArrayList(api.getContests()));
-			contest.setConverter(getConverter(Pair::getKey));
-			problem.setConverter(getConverter(Pair::getKey));
 		}catch(Exception e) {
 			getAlert(e, "コンテスト情報の取得に失敗しました。").show();
 			return;
