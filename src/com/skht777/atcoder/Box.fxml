@@ -41,8 +41,8 @@
 					promptText="問題を選択" GridPane.columnIndex="1" />
 				<ComboBox fx:id="submission" promptText="投稿を選択"
 					GridPane.columnIndex="1" GridPane.rowIndex="1" />
-				<ComboBox fx:id="contest" promptText="コンテストを選択"
-					GridPane.rowIndex="1" />
+				<ComboBox fx:id="contest" onAction="#setContest"
+					promptText="コンテストを選択" GridPane.rowIndex="1" />
 				<Button fx:id="problemButton" mnemonicParsing="false"
 					onAction="#setProblem" text="問題取得" GridPane.rowIndex="2" />
 				<Button fx:id="codeButton" mnemonicParsing="false" onAction="#setCode"

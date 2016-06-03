@@ -65,11 +65,15 @@ public class BoxController implements Initializable {
 		alert.getDialogPane().setContentText(message);
 		return alert;
 	}
+	
+	@FXML
+	private void setContest() {
+		selectedContest = contest.getSelectionModel().getSelectedItem().getValue();
+	}
 
 	@FXML
 	private void setProblem() {
 		try {
-			selectedContest = contest.getSelectionModel().getSelectedItem().getValue();
 			problem.setItems(FXCollections.observableArrayList(api.getInfo(userField.getText(), selectedContest)));
 		}catch(Exception e) {
 			getAlert(e, "投稿情報の取得に失敗しました。").show();
