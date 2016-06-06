@@ -119,7 +119,7 @@ public class MainController implements Initializable {
 			if(!newVal) userField.validate();
 			setProblem();
 		});
-		postedCode.getEngine().load(getClass().getResource("ace.html").toExternalForm());
+		postedCode.getEngine().load(getClass().getResource("/resources/html/ace.html").toExternalForm());
 		obj = (JSObject) postedCode.getEngine().executeScript("window");
 		try {
 			contest.getItems().addAll(api.getContests());

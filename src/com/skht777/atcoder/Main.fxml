@@ -14,7 +14,7 @@
 
 <BorderPane fx:id="root" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skht777.atcoder.MainController">
 	<top>
-		<GridPane gridLinesVisible="true" prefHeight="175.0" stylesheets="@text.css">
+		<GridPane gridLinesVisible="true" prefHeight="175.0" stylesheets="@/resources/css/text.css">
 			<columnConstraints>
 				<ColumnConstraints halignment="CENTER" percentWidth="50.0" />
 				<ColumnConstraints halignment="CENTER" percentWidth="50.0" />
@@ -36,29 +36,29 @@
 		</GridPane>
 	</top>
 	<bottom>
-      <GridPane BorderPane.alignment="CENTER">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-         </rowConstraints>
-         <children>
-      		<JFXButton fx:id="saveButton" contentDisplay="CENTER" graphicTextGap="12.0" mnemonicParsing="false" onAction="#saveCode" prefHeight="40.0" prefWidth="100.0" text="保存する" GridPane.columnIndex="1">
-      			<font>
-      				<Font size="17.0" />
-      			</font>
-      		</JFXButton>
+		<GridPane BorderPane.alignment="CENTER">
+			<columnConstraints>
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+				<ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+			</rowConstraints>
+			<children>
+				<JFXButton fx:id="saveButton" contentDisplay="CENTER" graphicTextGap="12.0" mnemonicParsing="false" onAction="#saveCode" prefHeight="40.0" prefWidth="100.0" text="保存する" GridPane.columnIndex="1">
+					<font>
+						<Font size="17.0" />
+					</font>
+				</JFXButton>
 				<Label fx:id="languageLabel">
 					<font>
 						<Font size="17.0" />
 					</font>
 				</Label>
-         </children>
-      </GridPane>
+			</children>
+		</GridPane>
 	</bottom>
-   <center>
-      <WebView fx:id="postedCode" prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER" />
-   </center>
+	<center>
+		<WebView fx:id="postedCode" prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER" />
+	</center>
 </BorderPane>
