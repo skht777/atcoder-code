@@ -13,7 +13,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
  * @author skht777
  *
  */
-public enum Extention {
+public enum Extension {
 	
 	AWK("Awk", "*.awk"),
 	BASH("Bash", "*.sh"),
@@ -38,7 +38,7 @@ public enum Extention {
 	LUAJIT("LuaJIT", "*.lua"),
 	MOONSCRIPT("MoonScript", "*.moon"),
 	NIM("Nim", "*.nim"),
-	OBJECTIVE_C("Objective-C", "*.m"),
+	OBJECTIVEC("Objective-C", "*.m"),
 	OCAML("OCaml", "*.ml"),
 	OCTAVE("Octave", "*.m"),
 	PASCAL("Pascal", "*.pas"),
@@ -51,7 +51,7 @@ public enum Extention {
 	SCALA("Scala", "*.scala"),
 	SCHEME("Scheme", "*.scm"),
 	SED("Sed", "*.sed"),
-	STDML("Standard ML", "*.ml"),
+	SML("Standard ML", "*.ml"),
 	SWIFT("Swift", "*.swift"),
 	TEXT("Text", "*.txt"),
 	TYPESCRIPT("TypeScript", "*.ts"),
@@ -60,16 +60,20 @@ public enum Extention {
 	
 	private ExtensionFilter filter;
 	
-	private Extention(String name, String... extention) {
+	private Extension(String name, String... extention) {
 		filter = new ExtensionFilter(name, extention);
 	}
 	
-	public static List<ExtensionFilter> getExtensionList() {
-		return Arrays.stream(Extention.values()).map(e->e.filter).collect(Collectors.toList());
+	public ExtensionFilter getFilter() {
+		return filter;
 	}
 	
-	public static ExtensionFilter toExtensionFilter(String name) {
-		return getExtensionList().stream().filter(ex->ex.getDescription().equalsIgnoreCase(name.replaceFirst("\\d{0,2} \\(.+\\)", "")))
-				.findFirst().orElse(Extention.TEXT.filter);
+	public static List<ExtensionFilter> getFilterList() {
+		return Arrays.stream(Extension.values()).map(Extension::getFilter).collect(Collectors.toList());
+	}
+	
+	public static Extension of(String name) {
+		return Arrays.stream(Extension.values()).filter(ex->ex.getFilter().getDescription().equalsIgnoreCase(name.replaceFirst("\\d{0,2} \\(.+\\)", "")))
+				.findFirst().orElse(Extension.TEXT);
 	}
 }

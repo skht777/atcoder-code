@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Ace Editor sample</title>
+</head>
+<body>
+  <div id="editor" style="height: 600px"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
+  <script>
+    var editor = ace.edit("editor");
+    editor.setReadOnly(true);
+    editor.setTheme("ace/theme/monokai");
+    editor.setFontSize(14);
+    editor.getSession().setUseWrapMode(true);
+    editor.getSession().setTabSize(2);
+    function setMode(mode) {
+      editor.getSession().setMode("ace/mode/" + mode);
+    }
+    function setCode(code) {
+      editor.setValue(code, 1);
+    }
+    function getCode() {
+      return editor.getValue();
+    }
+  </script>
+</body>
+</html>

@@ -14,8 +14,6 @@ import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javafx.util.Pair;
-
 
 /**
  * @author skht777
@@ -36,13 +34,22 @@ public class APIConnect {
 		return String.format("http://skht777.webcrow.jp/atcoder-api/submissions/%s.php?id=%s&contest=%s", api, id, contest);
 	}
 	
-	public List<Pair<String, String>> getContests() throws IOException {
+	public List<Pair<String>> getContests() throws IOException {
 		JSONArray obj = adapter.request("http://kenkoooo.com/atcoder/json/contests.json").execute(JSONArray::new);
 		return IntStream.range(0, obj.length()).mapToObj(i->obj.getJSONObject(i))
 				.map(o->new Pair<>(o.getString("name"), o.getString("id"))).collect(Collectors.toList());
 	}
+	
+	public boolean isUserValid(String user) {
+		try {
+			return adapter.request("http://kenkoooo.com/atcoder-api/user?user=" + user).execute(JSONObject::new).keySet().size() > 1;
+		}catch(IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
-	public List<Pair<String, List<Submission>>> getInfo(String userId, String contest) throws IOException {
+	public List<Pair<List<Submission>>> getInfo(String userId, String contest) throws IOException {
 		JSONObject res = adapter.request(getURL("list", userId, contest)).execute(JSONObject::new).getJSONObject(contest);
 		Map<String, List<Submission>> submission = Stream.of(res.getJSONObject("submissions"))
 				.flatMap(o->o.keySet().stream().map(k->o.getJSONObject(k)).map(Submission::new)).collect(Collectors.groupingBy(Submission::getNumber));
@@ -52,15 +59,6 @@ public class APIConnect {
 
 	public String getCode(String id, String contest) throws IOException {
 		return adapter.request(getURL("answer", id, contest)).execute();
-	}
-
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	public static void main(String[] args) throws IOException {
-		APIConnect api = new APIConnect();
-		api.getContests().stream().sorted((e1,e2)->e1.getKey().compareTo(e2.getKey())).forEach(System.out::println);
 	}
 
 }
