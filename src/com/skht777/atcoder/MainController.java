@@ -3,6 +3,21 @@
  */
 package com.skht777.atcoder;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.validation.RequiredFieldValidator;
+import com.jfoenix.validation.base.ValidatorBase;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
+import netscape.javascript.JSObject;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -10,22 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
-
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.validation.RequiredFieldValidator;
-import com.jfoenix.validation.base.ValidatorBase;
-
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
-import javafx.stage.FileChooser;
-import netscape.javascript.JSObject;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebView;
 
 /**
  * @author skht777
@@ -68,7 +67,6 @@ public class MainController implements Initializable {
 			problem.getItems().addAll(api.getInfo(userField.getText(), contest.getSelectionModel().getSelectedItem().getValue()));
 		}catch(Exception e) {
 			getAlert(e, "投稿情報の取得に失敗しました。").show();
-			return;
 		}
 	}
 
@@ -91,6 +89,7 @@ public class MainController implements Initializable {
 		Extension lang = Extension.of(languageLabel.getText());
 		if (Stream.of(Extension.C, Extension.CPP).anyMatch(e->e.equals(lang))) obj.call("setMode", "c_cpp");
 		else obj.call("setMode", lang.toString().toLowerCase());
+		saveButton.setDisable(false);
 	}
 
 	@FXML
@@ -125,7 +124,6 @@ public class MainController implements Initializable {
 			contest.getItems().addAll(api.getContests());
 		}catch(Exception e) {
 			getAlert(e, "コンテスト情報の取得に失敗しました。").show();
-			return;
 		}
 	}
 }
