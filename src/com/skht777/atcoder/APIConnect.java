@@ -3,6 +3,9 @@
  */
 package com.skht777.atcoder;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +13,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 
 /**
@@ -35,14 +35,14 @@ public class APIConnect {
 	}
 	
 	public List<Pair<String>> getContests() throws IOException {
-		JSONArray obj = adapter.request("http://kenkoooo.com/atcoder/json/contests.json").execute(JSONArray::new);
+		JSONArray obj = adapter.request("http://kenkoooo.com/atcoder/atcoder-api/info/contests").execute(JSONArray::new);
 		return IntStream.range(0, obj.length()).mapToObj(i->obj.getJSONObject(i))
-				.map(o->new Pair<>(o.getString("name"), o.getString("id"))).collect(Collectors.toList());
+				.map(o->new Pair<>(o.getString("title"), o.getString("id"))).collect(Collectors.toList());
 	}
 	
 	public boolean isUserValid(String user) {
 		try {
-			return adapter.request("http://kenkoooo.com/atcoder-api/user?user=" + user).execute(JSONObject::new).keySet().size() > 1;
+			return adapter.request("http://kenkoooo.com/atcoder/atcoder-api/results?user=" + user).execute(JSONArray::new).length() > 1;
 		}catch(IOException e) {
 			e.printStackTrace();
 			return false;

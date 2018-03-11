@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
-<BorderPane fx:id="root" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skht777.atcoder.MainController">
+<BorderPane fx:id="root" prefHeight="600.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skht777.atcoder.MainController">
 	<top>
 		<GridPane gridLinesVisible="true" prefHeight="175.0" stylesheets="@/resources/css/text.css">
 			<columnConstraints>
